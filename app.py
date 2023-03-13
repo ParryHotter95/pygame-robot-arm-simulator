@@ -3,30 +3,45 @@ from robot import Robot
 from settings import Settings
 
 class App(pyglet.window.Window):
+    debug = False
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.settings = Settings()
         self.robot = Robot(self)
-        self.label = pyglet.text.Label("Hello, World!",
-                      font_name='Times New Roman',
-                      font_size=36,
-                      x=self.width//2, y=self.height//2,
-                      anchor_x='center', anchor_y='center')
-        pyglet.app.run()
    
     def on_mouse_motion(self, x, y, dx, dy):
-        text = f'{x=}, {y=}, {dx=}, {dy=}'
-        #print(text)
-        self.mouse_position_label = pyglet.text.Label(text,
-                              font_name='Times New Roman',
-                              font_size=16,
-                              x=5, y=5)
+        pass
+
+    def on_text_motion(self, motion):
+        if motion == pyglet.window.key.MOTION_UP and\
+            self.robot.shoulder_angle < self.settings.shoulder_max_angle-1:
+            self.robot.shoulder_angle += 1
+        if motion == pyglet.window.key.MOTION_DOWN and\
+            self.robot.shoulder_angle >= self.settings.shoulder_min_angle+1:
+            self.robot.shoulder_angle -= 1
+        if motion == pyglet.window.key.MOTION_RIGHT and\
+            self.robot.elbow_angle >= self.settings.elbow_min_angle+1:
+            self.robot.elbow_angle -= 1
+        if motion == pyglet.window.key.MOTION_LEFT and\
+            self.robot.elbow_angle < self.settings.elbow_max_angle-1:
+            self.robot.elbow_angle += 1
+
+    def show_position(self):
+        lines = (f'alpha = {self.robot.shoulder_angle}',
+                 f'beta = {self.robot.elbow_angle}')
+        for i, line in enumerate(lines):
+            text = pyglet.text.Label(line, font_size=25, x=self.width-200,
+                                     y=self.height-40-40*i)
+            text.draw()
 
     def on_draw(self):
         self.clear()
         self.robot.draw()
-        self.mouse_position_label.draw()
+        self.show_position()
+
 
 if __name__ == "__main__":
     window = App()
-    pyglet.app.run() 
+    #window.debug = True
+    pyglet.app.run()

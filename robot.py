@@ -18,10 +18,10 @@ class Robot:
         self.elbow_position = (self.origin[0]+self.arm_length*cos(radians(self.shoulder_angle)),
                                self.origin[1]+self.arm_length*sin(radians(self.shoulder_angle)))
         self.wrist_position = (self.elbow_position[0]
-                                + self.forearm_length*cos(radians(self.elbow_angle)),
+                                + self.forearm_length*cos(radians(self.elbow_angle+self.shoulder_angle)),
                                 self.elbow_position[1]
-                                + self.forearm_length*sin(radians(self.elbow_angle)))
-  
+                                + self.forearm_length*sin(radians(self.elbow_angle+self.shoulder_angle)))
+
     def draw(self):
         #draw a base
         base = pyglet.shapes.Rectangle(self.origin[0], self.origin[1], 40, 20,
